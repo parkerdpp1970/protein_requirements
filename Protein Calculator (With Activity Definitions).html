@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Protein Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6; /* Modern Blue */
+            --primary-hover: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --focus-ring: rgba(59, 130, 246, 0.3);
+            --radius: 12px;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            overflow: hidden;
+            transition: height 0.3s ease;
+        }
+
+        /* HEADER */
+        .header {
+            padding: 24px 24px 0;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* TABS (Unit Toggle) */
+        .toggle-container {
+            display: flex;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 10px;
+            margin: 20px 24px;
+        }
+        .toggle-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .toggle-btn.active {
+            background: white;
+            color: var(--text-main);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* FORM SECTIONS */
+        .section {
+            padding: 0 24px 24px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            margin-top: 16px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+        .modern-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-sizing: border-box;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+        }
+        .modern-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--focus-ring);
+        }
+        .unit-tag {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* GOAL CARDS */
+        .grid-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        .option-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-card:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        .option-card.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+            color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+        .option-icon { font-size: 20px; margin-bottom: 6px; display: block; }
+        .option-label { font-size: 12px; font-weight: 500; }
+
+        /* SLIDER */
+        .slider-container {
+            margin-top: 10px;
+        }
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+        input[type=range] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+
+        /* NEW: ACTIVITY DESCRIPTION BOX */
+        .activity-desc-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .activity-desc-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* ACTION BUTTON */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        /* RESULT MODAL */
+        .result-panel {
+            background: var(--primary);
+            color: white;
+            padding: 30px 24px;
+            text-align: center;
+            display: none;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .result-value {
+            font-size: 56px;
+            font-weight: 700;
+            line-height: 1;
+            margin: 16px 0;
+            letter-spacing: -1px;
+        }
+        .result-range {
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .reset-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-top: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .reset-btn:hover { transform: translateY(-1px); }
+
+        /* UTILS */
+        .hidden { display: none; }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <div id="inputForm">
+        <div class="header">
+            <h1>Protein Intake</h1>
+            <div class="subtitle">Calculate your optimal daily needs</div>
+        </div>
+
+        <div class="toggle-container">
+            <button class="toggle-btn active" onclick="setUnit('imperial')" id="btnImp">Imperial (Lbs)</button>
+            <button class="toggle-btn" onclick="setUnit('metric')" id="btnMet">Metric (Kg)</button>
+        </div>
+
+        <div class="section">
+            <!-- Weight Input -->
+            <label>Current Weight</label>
+            <div class="input-wrapper">
+                <input type="number" id="weight" class="modern-input" placeholder="e.g. 175">
+                <span class="unit-tag" id="weightUnit">lbs</span>
+            </div>
+
+            <!-- Goal Selection -->
+            <label>Primary Goal</label>
+            <div class="grid-options">
+                <div class="option-card selected" onclick="selectGoal('maintain', this)">
+                    <span class="option-icon">⚖️</span>
+                    <span class="option-label">Maintain</span>
+                </div>
+                <div class="option-card" onclick="selectGoal('build', this)">
+                    <span class="option-icon">💪</span>
+                    <span class="option-label">Build</span>
+                </div>
+                <div class="option-card" onclick="selectGoal('lose', this)">
+                    <span class="option-icon">🔥</span>
+                    <span class="option-label">Fat Loss</span>
+                </div>
+            </div>
+
+            <!-- Activity Slider -->
+            <label>Activity Level: <span id="activityLabel" style="color: var(--primary); font-weight: 700;">Moderate</span></label>
+            <div class="slider-container">
+                <input type="range" min="1" max="5" value="3" id="activityRange" oninput="updateActivityLabel(this.value)">
+                
+                <!-- Dynamic Description Box -->
+                <div class="activity-desc-box">
+                    <div id="activityDescription" class="activity-desc-text">
+                        Moderate exercise or sports 3-5 days a week.
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="calculate()">Calculate Needs</button>
+        </div>
+    </div>
+
+    <!-- RESULT PANEL -->
+    <div id="resultPanel" class="result-panel">
+        <div style="opacity: 0.9; font-size: 14px; font-weight: 500;">DAILY TARGET</div>
+        <div class="result-value" id="finalValue">0g</div>
+        <div class="result-range" id="finalRange">Range: 0 - 0g</div>
+        
+        <p style="font-size: 13px; opacity: 0.8; margin-top: 20px; line-height: 1.5;" id="recommendationText">
+            Based on your activity level and goals, this intake will support muscle synthesis while managing energy balance.
+        </p>
+
+        <button class="reset-btn" onclick="resetForm()">New Calculation</button>
+    </div>
+</div>
+
+<script>
+    let state = {
+        unit: 'imperial',
+        goal: 'maintain',
+        activityLevel: 3 // 1-5
+    };
+
+    const activityData = {
+        1: { label: "Sedentary", desc: "Desk job, little to no intentional exercise." },
+        2: { label: "Lightly Active", desc: "Light daily activity or exercise 1-3 days/week." },
+        3: { label: "Moderate", desc: "Moderate intensity exercise or sports 3-5 days/week." },
+        4: { label: "Very Active", desc: "Hard exercise 6-7 days/week or a physical job." },
+        5: { label: "Athlete", desc: "Professional training 2x/day or extremely physical labor." }
+    };
+
+    function setUnit(unit) {
+        state.unit = unit;
+        document.getElementById('btnImp').classList.toggle('active', unit === 'imperial');
+        document.getElementById('btnMet').classList.toggle('active', unit === 'metric');
+        document.getElementById('weightUnit').textContent = unit === 'imperial' ? 'lbs' : 'kg';
+        
+        // Clear input to avoid confusion
+        document.getElementById('weight').value = '';
+    }
+
+    function selectGoal(goal, element) {
+        state.goal = goal;
+        // Visual update
+        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function updateActivityLabel(val) {
+        state.activityLevel = parseInt(val);
+        const data = activityData[val];
+        
+        document.getElementById('activityLabel').textContent = data.label;
+        document.getElementById('activityDescription').textContent = data.desc;
+    }
+
+    function calculate() {
+        const weightInput = document.getElementById('weight').value;
+        if (!weightInput) {
+            document.getElementById('weight').focus();
+            return;
+        }
+
+        const weight = parseFloat(weightInput);
+        // Convert to KG for math
+        const weightKg = state.unit === 'imperial' ? weight * 0.453592 : weight;
+
+        // Base Factors (g per kg)
+        let baseFactor = 0.8; // Sedentary baseline
+
+        // 1. Activity Multiplier
+        const activityAddons = [0, 0.2, 0.4, 0.6, 0.8]; // Added to base per level
+        let currentFactor = baseFactor + activityAddons[state.activityLevel - 1];
+
+        // 2. Goal Multiplier
+        if (state.goal === 'build') {
+            currentFactor += 0.4; // Surplus for muscle
+        } else if (state.goal === 'lose') {
+            currentFactor += 0.5; // Higher protein to preserve muscle in deficit
+        }
+
+        // Cap for safety/realism (2.5g/kg is very high for naturals)
+        if (currentFactor > 2.4) currentFactor = 2.4;
+
+        const proteinTarget = Math.round(weightKg * currentFactor);
+        const minRange = Math.round(weightKg * (currentFactor - 0.2));
+        const maxRange = Math.round(weightKg * (currentFactor + 0.2));
+
+        // Render Results
+        document.getElementById('finalValue').textContent = `${proteinTarget}g`;
+        document.getElementById('finalRange').textContent = `Optimal Range: ${minRange}g - ${maxRange}g`;
+        
+        // Dynamic Text
+        let recText = "";
+        if (state.goal === 'build') recText = "To support hypertrophy, this high protein target provides the amino acids necessary for tissue repair after intensive training.";
+        else if (state.goal === 'lose') recText = "High protein is critical during fat loss to ensure your body burns fat stores rather than muscle tissue for energy.";
+        else recText = "This balanced intake supports your activity level, immune function, and general tissue maintenance without excess calories.";
+        
+        document.getElementById('recommendationText').textContent = recText;
+
+        // Transition
+        document.getElementById('inputForm').style.display = 'none';
+        document.getElementById('resultPanel').style.display = 'block';
+    }
+
+    function resetForm() {
+        document.getElementById('resultPanel').style.display = 'none';
+        document.getElementById('inputForm').style.display = 'block';
+        document.getElementById('weight').value = '';
+    }
+
+    // Initialize
+    updateActivityLabel(3);
+</script>
+
+<script>window.parent.postMessage({ action: "ready" }, "*"); 
+ 
+window.console = new Proxy(console, {
+  get(target, prop) {
+    if (['log', 'warn', 'error'].includes(prop)) {
+      return new Proxy(target[prop], {
+        apply(fn, thisArg, args) {
+          fn.apply(thisArg, args);
+          window.parent.postMessage({ action: 'console', 
+            type: prop, 
+            args: args.map((arg) => {
+              try {
+                return JSON.stringify(arg).replace(/^["']|["']$/g, '');
+              } catch (e) {
+                return arg;
+              }
+            }) 
+          }, '*');
+        }
+      });
+    }
+    return target[prop];
+  }
+});
+</script></body>
+</html>
